@@ -1,8 +1,8 @@
-# 🐧 Lab 3: Penguins Classification with XGBoost and FastAPI
+# Lab 3: Penguins Classification with XGBoost and FastAPI
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 This project demonstrates an end-to-end machine learning pipeline using the **Seaborn Penguins** dataset. The workflow includes:
 
@@ -14,33 +14,33 @@ This project demonstrates an end-to-end machine learning pipeline using the **Se
 
 ---
 
-## 🧪 How to Run the Project
+## How to Run the Project
 
-### ✅ 1. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/aidi-2004-ai-enterprise/lab3_lanuja
 cd lab3_lanuja
 
-2. Set Up and Activate Virtual Environment
+### 2. Set Up and Activate Virtual Environment
 uv venv
 source .venv/bin/activate
 
-3. Install Dependencies
+### 3. Install Dependencies
 uv pip install -r requirements.txt
+---
 
-
-**Train the Model**
+### Train the Model
 Load and clean the dataset
 Preprocess and encode features
 Train an XGBoost classifier
 Serialize the model to base64 and save it as app/data/model.json
 python train.py
 
-**Run the FastAPI Server**
+### Run the FastAPI Server
 uvicorn app.main:app --reload
 
-**Example Input for /predict**
+### Example Input for /predict
 {
   "bill_length_mm": 39.1,
   "bill_depth_mm": 18.7,
@@ -56,8 +56,8 @@ The response will
   "species": "Adelie"
 }
 
-
-**project structure**
+---
+### project structure
 penguins-xgboost-fastapi/
 ├── train.py
 ├── app/
@@ -72,5 +72,5 @@ penguins-xgboost-fastapi/
 model.json stores a base64-encoded version of the trained XGBoost model for easy JSON loading.
 This is a local-only deployment.
 
-**Repository**: `lab3_lanuja`
+
 
