@@ -14,9 +14,9 @@ This project demonstrates an end-to-end machine learning pipeline using the **Se
 
 ---
 
-## 🧪 How to Run the Project
+##  How to Run the Project
 
-### 1. Clone the Repository
+1. Clone the Repository
 
 ```bash
 git clone https://github.com/aidi-2004-ai-enterprise/lab3_lanuja.git
