@@ -1,10 +1,10 @@
-### Penguins XGBoost + FastAPI (Cloud Run)
+# Penguins XGBoost + FastAPI (Cloud Run)
 A production-style ML inference service that serves penguin species predictions via a FastAPI endpoint.
 Model is an XGBoost classifier; the service loads a JSON-serialized model from Google Cloud Storage (GCS) at startup.
 Deployed to Cloud Run, containerized with Docker, tested with pytest, and load-tested with Locust.
 -------
 
-### Tech Stack
+# Tech Stack
 Model: XGBoost (JSON booster)
 API: FastAPI + Uvicorn
 Storage: Google Cloud Storage
@@ -14,12 +14,12 @@ Testing: pytest + pytest-cov
 Load test: Locust
 ------------
 
-### Quick Start (Local)
+# Quick Start (Local)
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/<your-username>/<your-repo>.git
-   cd <your-repo>
+   git clone https://github.com/aidi-2004-ai-enterprise/Assignment2_Lanuja.git
+   cd Assignment2_Lanuja
 
 2. **Environment**
 
@@ -40,11 +40,11 @@ uvicorn app.main:app --host 0.0.0.0 --port 8080
 # Open docs: http://localhost:8080/docs
 -------------
 
-### Run in Docker (Local)
-# Build
+# Run in Docker (Local)
+Build
 docker build --platform linux/amd64 -t penguin-api .
 
-# Run (mount your SA key read-only)
+Run (mount your SA key read-only)
 docker run -p 8080:8080 \
   -v /ABSOLUTE/PATH/sa-key.json:/gcp/sa-key.json:ro \
   -e GOOGLE_APPLICATION_CREDENTIALS=/gcp/sa-key.json \
@@ -53,12 +53,16 @@ docker run -p 8080:8080 \
   penguin-api:latest
 ----------
 
-### Cloud Run (Manual)
+# Cloud Run (Manual)
+
+
 Push image to Artifact Registry:
 docker tag penguin-api us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
 gcloud auth configure-docker us-central1-docker.pkg.dev
 docker push us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
 Create a Secret Manager secret for sa-key.json, mount it at /gcp/sa-key.json.
+
+
 Deploy in Cloud Run (console):
 Image: us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
 Port: 8080
@@ -69,7 +73,7 @@ GCS_BUCKET_NAME=...
 GCS_BLOB_NAME=model.json
 -----------
 
-### API
+**API**
 POST /predict
 Request body (JSON):
 {
@@ -89,22 +93,23 @@ curl -X POST http://localhost:8080/predict \
   -d '{"bill_length_mm":39.1,"bill_depth_mm":18.7,"flipper_length_mm":181,"body_mass_g":3750,"year":2009,"sex":"male","island":"Torgersen"}'
 -----------
 
-### Testing
+**Testing**
 pytest --cov=app tests/
 
-### Load Testing (Locust)
+**Load Testing (Locust)**
 Run Locust UI (local):
 LOCUST_HOST=http://localhost:8080 locust
-# Open http://localhost:8089
+Open http://localhost:8089
 
 ### Headless examples (cloud):
 LOCUST_HOST=https://<your-cloud-run-url> \
   locust -f locustfile.py --headless -u 10 -r 5 -t 5m --csv=results_cloud_normal --only-summary
+-------
 
 See LOAD_TEST_REPORT.md for results and analysis.
 Raw CSVs can be stored under load_results/.
-📁 Project Structure
-.
+
+Project Structure
 ├── app/
 │   ├── main.py
 │   ├── data/                
@@ -126,10 +131,12 @@ Out-of-distribution inputs (extreme lengths/weights, unseen sex/island values).
 Missing or wrong types (e.g., strings for numeric fields).
 Data drift (real penguin measurements shifting over time).
 Malformed JSON or empty payloads.
+
 Mitigation: strict Pydantic validation, boundary checks, default fallbacks, and monitoring for drift/anomalies.
 
 2) What happens if your model file becomes corrupted?
 Load will fail at startup; API should return a 5xx on health/predict if the model isn’t ready.
+
 Mitigation: verify checksum/size before load, fail fast with clear logs, keep a last-known-good model, and add alerting.
 
 3) What’s a realistic load for a penguin classification service?
@@ -138,7 +145,7 @@ From our tests: locally up to ~150 RPS sustained with zero failures; Cloud Run s
 
 4) How would you optimize if response times are too slow?
 Increase CPU/RAM per instance; tune concurrency.
-Keep model in memory, load at startup (done).
+Keep model in memory, load at startup .
 Reduce logging; avoid heavy work on request path.
 Consider lighter/quantized models or batching if appropriate.
 Enable min instances to avoid cold starts.
@@ -152,7 +159,7 @@ Cold start count and autoscaling activity.
 Input validation failures rate.
 
 6) Why is Docker layer caching important for build speed? (Did you leverage it?)
-Reuses prior layers so you don’t reinstall dependencies or recopy sources unnecessarily → faster builds.
+Reuses prior layers so i don’t reinstall dependencies or recopy sources unnecessarily → faster builds.
 Yes: COPY requirements.txt → pip install → COPY . . leverages cache correctly.
 
 7) What security risks exist with running containers as root?
