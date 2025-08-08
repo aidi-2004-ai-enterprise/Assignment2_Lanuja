@@ -18,8 +18,9 @@ Load test: Locust
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/aidi-2004-ai-enterprise/Assignment2_Lanuja.git
-   cd Assignment2_Lanuja
+   git clone https://github.com/<username>/<repo>.git
+   cd <repo>
+   
 
 2. **Environment**
 
