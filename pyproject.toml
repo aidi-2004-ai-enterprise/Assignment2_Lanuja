@@ -10,5 +10,6 @@ dependencies = [
     "seaborn",
     "xgboost",
     "scikit-learn",
-    "pydantic"
+    "pydantic",
+    "locust>=2.25.0",
 ]

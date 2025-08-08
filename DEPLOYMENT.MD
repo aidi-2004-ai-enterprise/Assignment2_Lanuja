@@ -20,7 +20,7 @@ docker run -p 8080:8080 \
   penguin-api
 
 
-## issues and the solution
+### issues and the solution
 
 module not found error: No module named 'httpx' : Installed httpx (required by FastAPI test client)
 No matching distribution found for numpy==2.3.1 : Cleaned up requirements.txt, downgraded to numpy>=1.26.0
@@ -29,7 +29,7 @@ No matching distribution found for numpy==2.3.1 : Cleaned up requirements.txt, d
 
 ModuleNotFoundError: No module named 'app' : Added __init__.py and fixed Python path in tests
 
-##  Docker Image Details
+###  Docker Image Details
 
 - **Image Name**: `penguin-api`
 - **Image ID**: `825584e3ee0e`
@@ -49,7 +49,7 @@ ModuleNotFoundError: No module named 'app' : Added __init__.py and fixed Python 
 
 Image optimized by using `.dockerignore` and pip `--no-cache-dir` flag.
 
-## Commands Used
+### Commands Used
 1. Build Image for Cloud Run
 docker build --platform linux/amd64 -t penguin-api .
 
@@ -73,13 +73,13 @@ GOOGLE_APPLICATION_CREDENTIALS=/gcp/sa-key.json
 GCS_BUCKET_NAME=penguin-models-lanuja
 GCS_BLOB_NAME=model.json
 
-## Deployment issues and solution
+### Deployment issues and solution
 importerror: cannot import name 'app', which was caused by a circular import in main.py. I fixed this by removing the redundant from app.main import app statement.
 
 Billing account not found : This happened because my GCP project did not have billing enabled. I resolved it by linking a billing account to the project in the GCP Console.
 
 500 Internal Server Error because the local image was not tagged as latest. I solved this by rebuilding the image and explicitly tagging it with :latest.
 
-## final URL
+### final URL
 https://penguin-api-1086939640536.us-central1.run.app/docs
 
