@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Environment variables
+.env
+
+# MacOS files
+.DS_Store
+
+# IDEs and tools
+.vscode/
+
+# Testing
+.pytest_cache/
+.coverage
+
+# Service account keys
+sa-key.json
+
+*.json

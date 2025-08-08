@@ -1,4 +1,5 @@
 # app/main.py
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from enum import Enum
@@ -8,7 +9,20 @@ import xgboost as xgb
 import numpy as np
 import logging
 import os
-import base64  # make sure this is at the top with other imports
+import base64
+from google.cloud import storage  # NEW: Import for GCS
+
+from dotenv import load_dotenv
+load_dotenv()
+
+
+import os
+import uvicorn
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))  # fallback to 8080
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 
 # Setup logging
@@ -35,12 +49,19 @@ class PenguinFeatures(BaseModel):
 
 app = FastAPI()
 
-# Load model
-MODEL_PATH = os.path.join("app", "data", "model.json")
+# Load model.json from GCS instead of local file
+GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
+GCS_BLOB_NAME = os.getenv("GCS_BLOB_NAME")
 
-
-with open(MODEL_PATH) as f:
-    model_info = json.load(f)
+try:
+    client = storage.Client()
+    bucket = client.bucket(GCS_BUCKET_NAME)
+    blob = bucket.blob(GCS_BLOB_NAME)
+    model_json_string = blob.download_as_text()
+    model_info = json.loads(model_json_string)
+except Exception as e:
+    logger.error(f"Failed to load model from GCS: {e}")
+    raise RuntimeError("Model loading failed")
 
 # Decode base64-encoded model string into binary
 model_base64 = model_info["model"]
@@ -53,8 +74,6 @@ booster.load_model(bytearray(model_binary))
 # Load columns and reverse label mapping
 columns = model_info["columns"]
 label_mapping = {v: k for k, v in model_info["label_mapping"].items()}
-
-
 
 @app.post("/predict")
 def predict(features: PenguinFeatures):
@@ -83,7 +102,7 @@ def predict(features: PenguinFeatures):
         predicted_species = label_mapping.get(pred_label, "Unknown")
 
         logger.info(f"Prediction success: {predicted_species}")
-        return {"species": predicted_species}
+        return {"prediction": predicted_species}
 
     except Exception as e:
         logger.error(f"Prediction error: {str(e)}")
