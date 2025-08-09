@@ -139,31 +139,40 @@ Raw CSVs can be stored under load_results/.
 
 ---
 # Assignment Answers
-1) What edge cases might break your model in production that aren’t in training data?
+
+1) **What edge cases might break your model in production that aren’t in training data?**
+   
 Out-of-distribution inputs (extreme lengths/weights, unseen sex/island values).
+
 Missing or wrong types (e.g., strings for numeric fields).
+
 Data drift (real penguin measurements shifting over time).
+
 Malformed JSON or empty payloads.
 
 Mitigation: strict Pydantic validation, boundary checks, default fallbacks, and monitoring for drift/anomalies.
 
-2) What happens if your model file becomes corrupted?
+2) **What happens if your model file becomes corrupted?**
+   
 Load will fail at startup; API should return a 5xx on health/predict if the model isn’t ready.
 
 Mitigation: verify checksum/size before load, fail fast with clear logs, keep a last-known-good model, and add alerting.
 
-3) What’s a realistic load for a penguin classification service?
+3) **What’s a realistic load for a penguin classification service?**
+   
 Low to moderate (tens–hundreds RPS), depending on usage.
 From our tests: locally up to ~150 RPS sustained with zero failures; Cloud Run scaled to 100 users with low p95 latency.
 
-4) How would you optimize if response times are too slow?
+4) **How would you optimize if response times are too slow?**
+   
 Increase CPU/RAM per instance; tune concurrency.
 Keep model in memory, load at startup .
 Reduce logging; avoid heavy work on request path.
 Consider lighter/quantized models or batching if appropriate.
 Enable min instances to avoid cold starts.
 
-5) What metrics matter most for ML inference APIs?
+5) **What metrics matter most for ML inference APIs?**
+   
 Latency: p50/p95/p99.
 Error rate: 4xx/5xx.
 Throughput: RPS.
@@ -171,36 +180,44 @@ Resource usage: CPU/RAM per instance.
 Cold start count and autoscaling activity.
 Input validation failures rate.
 
-6) Why is Docker layer caching important for build speed? (Did you leverage it?)
+6) **Why is Docker layer caching important for build speed? (Did you leverage it?)**
+   
 Reuses prior layers so i don’t reinstall dependencies or recopy sources unnecessarily → faster builds.
 Yes: COPY requirements.txt → pip install → COPY . . leverages cache correctly.
 
-7) What security risks exist with running containers as root?
+7) **What security risks exist with running containers as root?**
+    
 Privilege escalation and broader blast radius if compromised.
 Mitigation: add a non-root user, read-only filesystem, drop capabilities, mount secrets read-only.
 
-8) How does cloud auto-scaling affect your load test results?
+8) **How does cloud auto-scaling affect your load test results?**
+    
 Smooths spikes by adding instances; p95 latency remains lower under sudden load.
 Cold starts may add occasional outliers if min instances is 0.
 
-9) What would happen with 10x more traffic?
+9) **What would happen with 10x more traffic?**
+ 
 Without scaling: throttling/timeouts and higher p95.
 With autoscaling: more instances spin up, higher cost; watch concurrency limits and per-instance CPU.
 
-10) How would you monitor performance in production?
+10) **How would you monitor performance in production?**
+
 Cloud Monitoring dashboards: latency (p50/p95/p99), error rate, RPS, instance CPU/memory.
 Structured logs for errors/exceptions; alerts on sustained p95 > threshold or error rate > threshold.
 
-11) How would you implement blue-green deployment?
+11) **How would you implement blue-green deployment?**
+    
 Maintain two services/versions (blue/green).
 Deploy to green, run smoke tests, then switch traffic (or use Cloud Run revisions with traffic splitting).
 Rollback instantly if issues arise.
 
-12) What would you do if deployment fails in production?
+12) **What would you do if deployment fails in production?**
+    
 Immediate rollback to last healthy revision.
 Inspect logs/metrics, fix root cause in staging, redeploy.
 Keep runbooks and alerts for faster MTTR.
 
-13) What happens if your container uses too much memory?
-The platform OOM-kills the container → requests fail until a new instance comes up.
-Mitigation: right-size memory, monitor usage, reduce model footprint/logging, and set autoscaling appropriately.
+13) **What happens if your container uses too much memory?**
+    
+OOM kill → failures until restart.
+Mitigation: monitor usage, reduce footprint, set correct limits.
