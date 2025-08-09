@@ -16,116 +16,6 @@ Deployed to Cloud Run, containerized with Docker, tested with pytest, and load-t
 - **Load test**: Locust
 
 ---
-
-## Quick Start (Local)
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/<username>/<repo>.git
-cd <repo>
-2. Environment
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-3. Environment Variables
-Create a .env file:
-GOOGLE_APPLICATION_CREDENTIALS=/gcp/sa-key.json   # if running in Docker with a mounted key
-GCS_BUCKET_NAME=penguin-models-<lanuja>
-GCS_BLOB_NAME=model.json
-4. Run locally
-uvicorn app.main:app --host 0.0.0.0 --port 8080
-Open docs: http://localhost:8080/docs
-Run in Docker (Local)
-Build
-docker build --platform linux/amd64 -t penguin-api .
-Run (mount your SA key read-only)
-docker run -p 8080:8080 \
-  -v /ABSOLUTE/PATH/sa-key.json:/gcp/sa-key.json:ro \
-  -e GOOGLE_APPLICATION_CREDENTIALS=/gcp/sa-key.json \
-  -e GCS_BUCKET_NAME=penguin-models-<lanuja> \
-  -e GCS_BLOB_NAME=model.json \
-  penguin-api:latest
-Cloud Run (Manual)
-Push image to Artifact Registry
-docker tag penguin-api us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
-gcloud auth configure-docker us-central1-docker.pkg.dev
-docker push us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
-Create a Secret Manager secret for sa-key.json, mount it at /gcp/sa-key.json.
-Deploy in Cloud Run (console)
-
-Image: us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
-Port: 8080
-Allow unauthenticated (or use ID tokens)
-Env vars:
-GOOGLE_APPLICATION_CREDENTIALS=/gcp/sa-key.json
-GCS_BUCKET_NAME=...
-GCS_BLOB_NAME=model.json
-API
-POST /predict
-Request body (JSON):
-{
-  "bill_length_mm": 39.1,
-  "bill_depth_mm": 18.7,
-  "flipper_length_mm": 181,
-  "body_mass_g": 3750,
-  "year": 2009,
-  "sex": "male",
-  "island": "Torgersen"
-}
-Response:
-{ "prediction": "Adelie" }
-Curl example:
-curl -X POST http://localhost:8080/predict \
-  -H "Content-Type: application/json" \
-  -d '{"bill_length_mm":39.1,"bill_depth_mm":18.7,"flipper_length_mm":181,"body_mass_g":3750,"year":2009,"sex":"male","island":"Torgersen"}'
-Testing
-pytest --cov=app tests/
-Load Testing (Locust)
-Run Locust UI (local):
-LOCUST_HOST=http://localhost:8080 locust
-Open: http://localhost:8089
-Headless example (Cloud):
-
-LOCUST_HOST=https://<your-cloud-run-url> \
-  locust -f locustfile.py --headless -u 10 -r 5 -t 5m --csv=results_cloud_normal --only-summary
-See LOAD_TEST_REPORT.md for results and analysis.
-Raw CSVs can be stored under load_results/.
-
-Project Structure
-├── app/
-│   ├── main.py
-│   ├── data/
-│   └── logs/
-├── tests/
-│   └── test_api.py
-├── Dockerfile
-├── requirements.txt
-├── locustfile.py
-├── .dockerignore
-├── .gitignore
-├── DEPLOYMENT.md
-├── LOAD_TEST_REPORT.md
-└── README.md
-
-
-
-**Penguins XGBoost + FastAPI (Cloud Run)**
-
-A production-style ML inference service that serves penguin species predictions via a FastAPI endpoint.
-Model is an XGBoost classifier; the service loads a JSON-serialized model from Google Cloud Storage (GCS) at startup.
-Deployed to Cloud Run, containerized with Docker, tested with pytest, and load-tested with Locust.
--------
-
-# Tech Stack
-Model: XGBoost (JSON booster)
-API: FastAPI + Uvicorn
-Storage: Google Cloud Storage
-Container: Docker (python:3.10-slim)
-Hosting: Cloud Run
-Testing: pytest + pytest-cov
-Load test: Locust
-------------
-
 # Quick Start (Local)
 
 1. **Clone the repository**
@@ -151,7 +41,7 @@ GCS_BLOB_NAME=model.json
 
 uvicorn app.main:app --host 0.0.0.0 --port 8080
 # Open docs: http://localhost:8080/docs
--------------
+---
 
 **Run in Docker (Local)**
 
@@ -165,10 +55,9 @@ docker run -p 8080:8080 \
   -e GCS_BUCKET_NAME=penguin-models-<lanuja> \
   -e GCS_BLOB_NAME=model.json \
   penguin-api:latest
-----------
+---
 
 **Cloud Run (Manual)**
-
 
 Push image to Artifact Registry:
 docker tag penguin-api us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
@@ -178,6 +67,7 @@ Create a Secret Manager secret for sa-key.json, mount it at /gcp/sa-key.json.
 
 
 **Deploy in Cloud Run (console)**:
+
 Image: us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
 Port: 8080
 Allow unauthenticated (or use ID tokens)
@@ -185,7 +75,7 @@ Env vars:
 GOOGLE_APPLICATION_CREDENTIALS=/gcp/sa-key.json
 GCS_BUCKET_NAME=...
 GCS_BLOB_NAME=model.json
------------
+---
 
 **API**
 POST /predict
@@ -207,7 +97,7 @@ Curl example:
 curl -X POST http://localhost:8080/predict \
   -H "Content-Type: application/json" \
   -d '{"bill_length_mm":39.1,"bill_depth_mm":18.7,"flipper_length_mm":181,"body_mass_g":3750,"year":2009,"sex":"male","island":"Torgersen"}'
------------
+---
 
 **Testing**
 pytest --cov=app tests/
@@ -217,10 +107,10 @@ Run Locust UI (local):
 LOCUST_HOST=http://localhost:8080 locust
 Open http://localhost:8089
 
-### Headless examples (cloud):
+**Headless examples (cloud)**:
 LOCUST_HOST=https://<your-cloud-run-url> \
   locust -f locustfile.py --headless -u 10 -r 5 -t 5m --csv=results_cloud_normal --only-summary
--------
+---
 
 See LOAD_TEST_REPORT.md for results and analysis.
 Raw CSVs can be stored under load_results/.
@@ -240,8 +130,8 @@ Project Structure
 ├── DEPLOYMENT.md
 ├── LOAD_TEST_REPORT.md
 └── README.md
---------
-### (Assignment Answers)
+---
+# Assignment Answers
 1) What edge cases might break your model in production that aren’t in training data?
 Out-of-distribution inputs (extreme lengths/weights, unseen sex/island values).
 Missing or wrong types (e.g., strings for numeric fields).
