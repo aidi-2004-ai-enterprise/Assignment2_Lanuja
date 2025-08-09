@@ -42,7 +42,9 @@ Deployed to Cloud Run, containerized with Docker, tested with pytest, and load-t
 
    ```bash
    uvicorn app.main:app --host 0.0.0.0 --port 8080
-Open docs: http://localhost:8080/docs
+
+Open http://localhost:8080/docs
+
 ---
 
 **Run in Docker (Local)**
