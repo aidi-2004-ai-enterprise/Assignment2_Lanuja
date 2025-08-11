@@ -75,6 +75,7 @@ Push image to Artifact Registry:
 
 
 **Deploy in Cloud Run (console)**:
+cloud URL: https://penguin-api-1086939640536.us-central1.run.app
 Image: us-central1-docker.pkg.dev/<PROJECT_ID>/penguin-repo/penguin-api:latest
 Port: 8080
 Allow unauthenticated (or use ID tokens)
@@ -105,13 +106,6 @@ Response:
 
     ```json
     { "prediction": "Adelie" }
-
-Curl example:
-
-    ```bash
-    curl -X POST http://localhost:8080/predict \
-    -H "Content-Type: application/json" \
-    -d '{"bill_length_mm":39.1,"bill_depth_mm":18.7,"flipper_length_mm":181,"body_mass_g":3750,"year":2009,"sex":"male","island":"Torgersen"}'
 ---
 
 **Testing**
@@ -131,7 +125,7 @@ Open http://localhost:8089
 **Headless examples (cloud)**:
 
     ```bash
-    LOCUST_HOST=https://<your-cloud-run-url> \
+    LOCUST_HOST=https://penguin-api-1086939640536.us-central1.run.app
     locust -f locustfile.py --headless -u 10 -r 5 -t 5m --csv=results_cloud_normal --only-summary
 ---
 
